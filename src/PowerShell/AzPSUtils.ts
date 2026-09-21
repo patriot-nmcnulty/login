@@ -40,6 +40,11 @@ export class AzPSUtils {
     }
     
     private static pushPSModulePath(psModulePath: string) {
+        const entries = (process.env.PSModulePath || '').split(path.delimiter);
+        if (entries.some(entry => entry === psModulePath || path.dirname(entry) === psModulePath)) {
+            core.debug(`Skip setting the default PowerShell module path, ${psModulePath} is already reachable.`);
+            return;
+        }
         process.env.PSModulePath = `${psModulePath}${path.delimiter}${process.env.PSModulePath}`;
         core.debug(`Set PSModulePath as ${process.env.PSModulePath}`);
     }
